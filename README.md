@@ -11,3 +11,8 @@
 将依赖复制到vendor下
 
 - go mod vendor
+
+## 编译
+
+- go build -o myapp main.go
+

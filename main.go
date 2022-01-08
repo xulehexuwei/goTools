@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"goTools/config_log"
+)
 
 func counter(out chan<- int) {
 	for x := 0; x < 100; x++ {
@@ -28,4 +31,7 @@ func main() {
 	go counter(naturals)
 	go squarer(squares, naturals)
 	printer(squares)
+
+	config_val := config_log.GetConfigValue("mysql_hive", "host")
+	fmt.Println(config_val)
 }
