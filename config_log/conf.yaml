@@ -1,0 +1,8 @@
+enabled: true
+path: /usr/local
+
+mysql:
+  host: 10.0.2.180
+  port: 3306
+  user: xiaomu
+  password: xiaomu@2020
