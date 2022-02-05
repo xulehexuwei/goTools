@@ -53,8 +53,9 @@ var (
 	configFile      = flag.String("configfile", filePath, "General configuration file")
 )
 
-func GetConfigValue(label string, key string) string {
+func GetConfigValue(label string, keys ...string) string {
 	var value string
+	key := keys[0]
 	if state == false {
 		log.Fatalf("Fail to find %v", filePath)
 	}
@@ -65,6 +66,9 @@ func GetConfigValue(label string, key string) string {
 	if cfg.HasSection(label) { //判断配置文件中是否有section（一级标签）
 		value, err := cfg.String(label, key) //根据一级标签section和option获取对应的值
 		if err != nil {
+			if len(keys) > 1 {
+				return keys[1]
+			}
 			log.Fatalf("Fail to find key: %v", key)
 		} else {
 			return value

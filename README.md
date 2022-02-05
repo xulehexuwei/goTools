@@ -16,3 +16,12 @@
 
 - go build -o myapp main.go
 
+
+## 缩写全称
+
+- Println
+  - print line 意思是打印一行
+
+- sprintf 
+
+  - string print format （字符串格式化打印）
