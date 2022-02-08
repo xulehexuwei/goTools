@@ -49,15 +49,15 @@ var (
 	//https://studygolang.com/articles/686
 	//支持命令行输入格式为-configfile=name, 默认为config.ini
 	//配置文件一般获取到都是类型
-	filePath, state = findConfigFile()
-	configFile      = flag.String("configfile", filePath, "General configuration file")
+	settingsFilePath, state = findConfigFile()
+	configFile              = flag.String("configfile", settingsFilePath, "General configuration file")
 )
 
 func GetConfigValue(label string, keys ...string) string {
 	var value string
 	key := keys[0]
 	if state == false {
-		log.Fatalf("Fail to find %v", filePath)
+		log.Fatalf("Fail to find %v", settingsFilePath)
 	}
 	cfg, err := config.ReadDefault(*configFile) //读取配置文件，并返回其Config
 	if err != nil {
