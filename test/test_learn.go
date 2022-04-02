@@ -1,6 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
+	"strconv"
+	"sync"
+	"time"
+)
 
 // 数组和slice
 func testArraySlice() {
@@ -41,11 +50,142 @@ func testMap() {
 
 }
 
+func bigSlowOperation() {
+
+	defer trace("bigSlowOperation")() // don't forget the extra parentheses
+
+	// ...lots of work…
+
+	time.Sleep(10 * time.Second) // simulate slow operation by sleeping
+
+}
+
+func trace(msg string) func() {
+
+	start := time.Now()
+
+	log.Printf("enter %s", msg)
+
+	return func() {
+
+		log.Printf("exit %s (%s)", msg, time.Since(start))
+
+	}
+
+}
+
+// defer recover忽略异常，程序不终止；如果未提前声明返回值的话，在defer中修改返回值是无效的操作
+func passError(s int) (x int, err error) {
+	defer func() {
+		if p := recover(); p != nil {
+			err = fmt.Errorf("internal error: %v", p)
+			x = 12
+		}
+	}()
+	x = 2 / s
+	return x, err
+}
+
+type Point struct{ X, Y float64 }
+type ColorPoint struct {
+	*Point
+	color int
+}
+
+func (p *Point) ScaleBy(factor float64) {
+
+	p.X *= factor
+
+	p.Y *= factor
+
+}
+
+func isPalindrome(x int) bool {
+	s := strconv.Itoa(x)
+	var t string
+	for i := 0; i < len(s); i++ {
+		//fmt.Println(string(s[i]))
+		t = string(s[i]) + t
+	}
+
+	if s == t {
+		return true
+	} else {
+		return false
+	}
+
+}
+
+func spiderUrl(ch chan int) {
+	// 根据URL获取资源
+	url := "https://www.jb51.net/article/138126.htm"
+	res, err := http.Get(url)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "fetch: %v\n", err)
+		os.Exit(1)
+	}
+
+	// 读取资源数据 body: []byte
+	_, err = ioutil.ReadAll(res.Body)
+
+	// 关闭资源流
+	res.Body.Close()
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "fetch: reading %s: %v\n", url, err)
+		os.Exit(1)
+	}
+
+	ch <- 1
+}
+
 func main() {
-	fmt.Println("学习笔记：", "go语言编程")
 
-	//testArraySlice()
+	//ch := make(chan int, 5)
 
-	testMap()
+	//for i:=0;i<4;i++{
+	//	go spiderUrl(ch)
+	//}
+	//
+	//
+	//for i:=0;i<5;i++{
+	//	select {
+	//	case r := <- ch:
+	//			fmt.Println(r)
+	//	default:
+	//		fmt.Println("zusai")
+	//	}
+	//
+	//}
 
+	//ch := make(chan int)
+	var wg sync.WaitGroup
+
+	for i := 0; i < 100; i++ {
+
+		go func(i int) {
+			wg.Add(1)
+			fmt.Println(i)
+			fmt.Println(&i)
+			wg.Done()
+
+		}(i)
+	}
+
+	wg.Wait()
+
+}
+
+func removeSpace(t *string) *string {
+	s := *t
+	l := len(s)
+	for _, v := range s {
+		vNew := string(v)
+		if vNew != " " {
+			*t = *t + string(v)
+		}
+	}
+	*t = (*t)[l:]
+	return t
 }
