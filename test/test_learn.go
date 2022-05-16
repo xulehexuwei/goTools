@@ -4,10 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/http"
-	"os"
 	"strconv"
-	"sync"
 	"time"
 )
 
@@ -116,28 +113,15 @@ func isPalindrome(x int) bool {
 
 }
 
-func spiderUrl(ch chan int) {
-	// 根据URL获取资源
-	url := "https://www.jb51.net/article/138126.htm"
-	res, err := http.Get(url)
+func writeFile() {
+	fmt.Println("start")
 
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "fetch: %v\n", err)
-		os.Exit(1)
-	}
-
-	// 读取资源数据 body: []byte
-	_, err = ioutil.ReadAll(res.Body)
-
-	// 关闭资源流
-	res.Body.Close()
-
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "fetch: reading %s: %v\n", url, err)
-		os.Exit(1)
-	}
-
-	ch <- 1
+	go func() {
+		time.Sleep(3 * time.Second)
+		r := "test"
+		s := []byte(r)
+		ioutil.WriteFile("./test.txt", s, 0666)
+	}()
 }
 
 func main() {
@@ -160,20 +144,26 @@ func main() {
 	//}
 
 	//ch := make(chan int)
-	var wg sync.WaitGroup
+	//var wg sync.WaitGroup
+	//
+	//for i := 0; i < 100; i++ {
+	//
+	//	go func(i int) {
+	//		wg.Add(1)
+	//		fmt.Println(i)
+	//		fmt.Println(&i)
+	//		wg.Done()
+	//
+	//	}(i)
+	//}
+	//
+	//wg.Wait()
 
-	for i := 0; i < 100; i++ {
+	writeFile()
 
-		go func(i int) {
-			wg.Add(1)
-			fmt.Println(i)
-			fmt.Println(&i)
-			wg.Done()
+	//time.Sleep(5*time.Second)
 
-		}(i)
-	}
-
-	wg.Wait()
+	fmt.Println("success")
 
 }
 
